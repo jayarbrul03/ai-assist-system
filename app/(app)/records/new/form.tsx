@@ -16,6 +16,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Loader2, Sparkles } from "lucide-react";
+import { LegalLodgementWarning } from "@/components/ui/legal-warning";
 
 const TYPES = [
   "minutes",
@@ -230,6 +231,7 @@ export function NewRecordsForm({ schemeId }: { schemeId: string }) {
             />
           </div>
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          <LegalLodgementWarning compact />
           <div className="flex gap-2">
             {!savedId ? (
               <Button onClick={saveDraft} disabled={saving}>

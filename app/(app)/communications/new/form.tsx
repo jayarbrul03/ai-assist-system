@@ -16,6 +16,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { STAGES, type StageValue } from "@/lib/comms";
+import { LegalLodgementWarning } from "@/components/ui/legal-warning";
 import { Loader2, Sparkles, AlertTriangle } from "lucide-react";
 
 interface EvidenceLink {
@@ -221,6 +222,9 @@ export function NewCommsForm({
                 placeholder="e.g. Stage 1 was served by email on 10 March and was not responded to within 14 days."
               />
             </div>
+          ) : null}
+          {stage !== "stage_1_fyi" ? (
+            <LegalLodgementWarning className="mt-2" compact />
           ) : null}
         </CardContent>
       </Card>

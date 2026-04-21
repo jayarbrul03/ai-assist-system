@@ -1,24 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import { Instrument_Serif } from "next/font/google";
 import { PostHogProvider } from "@/components/shared/posthog-provider";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
   subsets: ["latin"],
   display: "swap",
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
+  weight: ["400"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
   title: "Parity — Balance for strata. Clarity for everyone.",
   description:
-    "AI-mediated neutral governance, communication and accountability for Queensland body corporate schemes.",
+    "A neutral space between body corporate committees and lot owners in Queensland strata schemes. Clarity, fairness, and a lawyer-ready record — all in one place.",
 };
 
 export default function RootLayout({
@@ -29,9 +27,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-neutral-50 text-neutral-900">
+      <body className="min-h-full flex flex-col font-sans">
         <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>

@@ -1,50 +1,61 @@
 /**
- * Central runtime config. Values fall back to labelled placeholders when
- * missing so the app always boots — real values are required only at the
- * point of external API call. This keeps `next build` green when Supabase /
- * Anthropic credentials have not yet been provisioned.
+ * Central runtime config.
  *
- * AU residency: if SUPABASE_REGION is set and != ap-southeast-2 in prod,
- * we hard-fail at runtime from assertAuRegionAtRuntime().
+ * IMPORTANT: NEXT_PUBLIC_* variables are read via direct literal accessor so
+ * Next.js / Turbopack can statically inline them into the client bundle.
+ * Dynamic process.env[name] lookups do NOT get inlined, causing the client
+ * bundle to see `undefined` and fall through to the placeholder.
+ *
+ * Server-only secrets are read through the helper and never leak to the
+ * client.
  */
 
-function read(name: string): string {
-  const v = process.env[name];
+function coalesce(v: string | undefined, name: string): string {
   return v && v.length > 0 ? v : `__MISSING__${name}`;
 }
 
-function optional(name: string): string | undefined {
-  const v = process.env[name];
+function optional(v: string | undefined): string | undefined {
   return v && v.length > 0 ? v : undefined;
 }
 
 export const config = {
-  appUrl: read("NEXT_PUBLIC_APP_URL"),
+  appUrl: coalesce(process.env.NEXT_PUBLIC_APP_URL, "NEXT_PUBLIC_APP_URL"),
   supabase: {
-    url: read("NEXT_PUBLIC_SUPABASE_URL"),
-    anonKey: read("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
-    serviceRoleKey: read("SUPABASE_SERVICE_ROLE_KEY"),
+    url: coalesce(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "NEXT_PUBLIC_SUPABASE_URL",
+    ),
+    anonKey: coalesce(
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    ),
+    serviceRoleKey: coalesce(
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      "SUPABASE_SERVICE_ROLE_KEY",
+    ),
   },
   anthropic: {
-    apiKey: read("ANTHROPIC_API_KEY"),
+    apiKey: coalesce(process.env.ANTHROPIC_API_KEY, "ANTHROPIC_API_KEY"),
     chatModel: "claude-sonnet-4-5",
     fastModel: "claude-haiku-4-5",
   },
   voyage: {
-    apiKey: read("VOYAGE_API_KEY"),
+    apiKey: coalesce(process.env.VOYAGE_API_KEY, "VOYAGE_API_KEY"),
     model: "voyage-3",
     dimensions: 1024,
   },
   resend: {
-    apiKey: optional("RESEND_API_KEY"),
+    apiKey: optional(process.env.RESEND_API_KEY),
   },
   sentry: {
-    dsn: optional("SENTRY_DSN"),
-    publicDsn: optional("NEXT_PUBLIC_SENTRY_DSN"),
+    dsn: optional(process.env.SENTRY_DSN),
+    publicDsn: optional(process.env.NEXT_PUBLIC_SENTRY_DSN),
   },
   posthog: {
-    key: optional("NEXT_PUBLIC_POSTHOG_KEY"),
-    host: optional("NEXT_PUBLIC_POSTHOG_HOST") ?? "https://app.posthog.com",
+    key: optional(process.env.NEXT_PUBLIC_POSTHOG_KEY),
+    host:
+      optional(process.env.NEXT_PUBLIC_POSTHOG_HOST) ??
+      "https://app.posthog.com",
   },
   limits: {
     chatMessagesPerDay: 20,
@@ -69,10 +80,6 @@ export function isPlaceholderConfig(): boolean {
   );
 }
 
-/**
- * Call this at request time (not import time) before any external API call
- * that absolutely requires a real credential.
- */
 export function requireRealConfig(scope: "supabase" | "anthropic" | "voyage") {
   if (scope === "supabase" && isMissing(config.supabase.url)) {
     throw new Error(

@@ -13,20 +13,26 @@ import {
   Flag,
   Download,
   Settings,
+  Megaphone,
+  Gavel,
+  LifeBuoy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/chat", label: "Rulebook AI", icon: MessageSquareText },
-  { href: "/evidence", label: "Evidence", icon: FolderLock },
-  { href: "/timeline", label: "Timeline", icon: Clock },
+  { href: "/announcements", label: "Announcements", icon: Megaphone },
   { href: "/communications", label: "Communications", icon: Send },
   { href: "/records", label: "Records", icon: FileText },
+  { href: "/evidence", label: "Evidence", icon: FolderLock },
+  { href: "/timeline", label: "Timeline", icon: Clock },
   { href: "/impact", label: "Impact Log", icon: Activity },
   { href: "/issues", label: "Issues", icon: Flag },
+  { href: "/investigations", label: "Investigations", icon: Gavel },
   { href: "/export", label: "Export", icon: Download },
   { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/support", label: "Support", icon: LifeBuoy },
 ];
 
 export function Sidebar() {

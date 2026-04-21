@@ -6,7 +6,7 @@ import { ChatView } from "./chat-view";
 export default async function ChatPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session?: string }>;
+  searchParams: Promise<{ session?: string; q?: string }>;
 }) {
   const ctx = await getActiveScheme();
   if (!ctx) redirect("/login");
@@ -23,6 +23,7 @@ export default async function ChatPage({
 
   const sp = await searchParams;
   const activeSessionId = sp.session ?? null;
+  const autoAsk = sp.q ?? null;
 
   let messages: Array<{
     id: string;
@@ -48,6 +49,7 @@ export default async function ChatPage({
       sessions={(sessions ?? []) as Array<{ id: string; title: string | null; created_at: string }>}
       activeSessionId={activeSessionId}
       initialMessages={messages}
+      autoAsk={autoAsk}
     />
   );
 }

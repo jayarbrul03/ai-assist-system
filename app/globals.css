@@ -1,41 +1,201 @@
 @import "tailwindcss";
 
+/*
+ * PARITY — warm, welcoming, trustworthy palette + premium typography.
+ * Geist Sans (Vercel, battle-tested premium) + Instrument Serif (editorial
+ * accent only on biggest hero moments).
+ */
+
 :root {
-  --background: #fafafa;
+  --background: #faf9f6;
   --surface: #ffffff;
-  --border: #e5e7eb;
-  --foreground: #0a0a0a;
-  --muted: #737373;
+  --surface-muted: #f4f1eb;
+  --border: #e8e4db;
+  --border-strong: #d6d1c4;
+
+  --foreground: #171412;         /* deeper warm charcoal for crisp text */
+  --foreground-muted: #3f3935;   /* richer secondary */
+  --foreground-subtle: #6b635a;  /* tertiary / meta */
+
   --brand: #0f766e;
-  --brand-hover: #115e59;
-  --warning: #f59e0b;
-  --danger: #dc2626;
-  --success: #16a34a;
+  --brand-strong: #115e59;
+  --brand-soft: #ccfbf1;
+  --brand-softer: #f0fdfa;
+
+  --accent: #c0451f;
+  --accent-soft: #fef2f0;
+
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+
+  --success: #15803d;
+  --success-soft: #dcfce7;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-fraunces);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo,
+    Consolas, monospace;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
+
+  /* Warm stone replaces Tailwind neutral-*. */
+  --color-neutral-50: #faf9f6;
+  --color-neutral-100: #f4f1eb;
+  --color-neutral-200: #e8e4db;
+  --color-neutral-300: #d6d1c4;
+  --color-neutral-400: #a8a298;
+  --color-neutral-500: #6b635a;
+  --color-neutral-600: #4e453e;
+  --color-neutral-700: #3a322c;
+  --color-neutral-800: #252018;
+  --color-neutral-900: #171412;
+
+  /* Teal brand scale */
+  --color-teal-50: #f0fdfa;
+  --color-teal-100: #ccfbf1;
+  --color-teal-200: #99f6e4;
+  --color-teal-300: #5eead4;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+  --color-teal-700: #0f766e;
+  --color-teal-800: #115e59;
+  --color-teal-900: #134e4a;
+
+  /* Warm amber */
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
 }
 
-/* Lock to light theme — lawyer-ready output must be consistent. */
+/* Lock light theme */
 @media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: light;
-  }
+  :root { color-scheme: light; }
 }
 
 html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-feature-settings: "ss01", "ss03", "cv11", "tnum";
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
 }
 
+/*
+ * Typographic hierarchy — premium by default.
+ *
+ * Display (hero, top-of-page titles): weight 600, -0.035em tracking, 1.05 line-height
+ * H1 page title: weight 600, -0.03em, 1.1
+ * H2 section title: weight 600, -0.025em, 1.15
+ * H3 card title: weight 600, -0.02em, 1.2
+ * Body: 400, -0.005em, 1.55
+ * Meta / eyebrow: 500, +0.12em uppercase, 1.1
+ */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground);
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  font-weight: 600;
+}
+
+h1 { letter-spacing: -0.03em; line-height: 1.1; }
+h2 { letter-spacing: -0.025em; }
+h3 { letter-spacing: -0.02em; }
+
+p {
+  color: var(--foreground-muted);
+  line-height: 1.6;
+}
+
+/* Brand display — Geist 600 with display-scale tracking */
 .font-serif-brand {
-  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
-  font-feature-settings: "ss01", "ss02";
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  font-feature-settings: "ss01", "ss03", "cv11";
+  color: var(--foreground);
+}
+
+/* Editorial serif accent — ONLY for hero moments, used sparingly */
+.font-editorial {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.015em;
+}
+
+/* Mono for code / technical */
+.font-mono,
+code,
+pre {
+  font-family: var(--font-geist-mono), ui-monospace, Menlo, monospace;
+  font-feature-settings: "zero", "ss02";
+}
+
+/* Tabular numbers for statistics, countdowns, dates */
+.tabular-nums,
+[class*="font-serif-brand"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small caps eyebrow */
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-strong);
+}
+
+/* Soft focus rings with brand teal */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--brand);
+  border-radius: 0.5rem;
+}
+
+/* Scrollbars warm theme */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--surface-muted); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 6px;
+  border: 2px solid var(--surface-muted);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--foreground-subtle); }
+
+/* Teal selection */
+::selection {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+}
+
+/* Remove the bold-dampening antialias-kill seen in some browsers */
+strong, b {
+  font-weight: 600;
+  color: var(--foreground);
 }

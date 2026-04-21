@@ -38,6 +38,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "geist": "^1.7.0",
     "lucide-react": "^1.8.0",
     "nanoid": "^5.1.9",
     "next": "16.2.4",
@@ -55,11 +56,13 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "pg": "^8.20.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

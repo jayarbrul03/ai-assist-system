@@ -40,12 +40,14 @@ export function ChatView({
   sessions,
   activeSessionId,
   initialMessages,
+  autoAsk,
 }: {
   schemeId: string;
   schemeName: string;
   sessions: Session[];
   activeSessionId: string | null;
   initialMessages: Message[];
+  autoAsk?: string | null;
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -55,11 +57,20 @@ export function ChatView({
   const [streaming, setStreaming] = useState("");
   const [streamCitations, setStreamCitations] = useState<Citation[]>([]);
   const [drawer, setDrawer] = useState<{ id: string } | null>(null);
+  const [autoAsked, setAutoAsked] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
+
+  useEffect(() => {
+    if (autoAsk && !autoAsked && !activeSessionId) {
+      setAutoAsked(true);
+      void send(autoAsk);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoAsk, autoAsked, activeSessionId]);
 
   async function send(msg: string) {
     if (!msg.trim() || pending) return;
