@@ -20,6 +20,8 @@ export default async function OnboardingPage() {
     .limit(1)
     .maybeSingle();
 
+  console.log("existing", existing);
+
   if (!existing?.scheme_id) {
     const fullName =
       (user.user_metadata?.full_name as string | undefined) ??

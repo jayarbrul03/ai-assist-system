@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,12 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [devRole, setDevRole] = useState<DevRole | null>(null);
+  const [isDev, setIsDev] = useState(false);
+
+  useEffect(() => {
+    const host = window.location.hostname;
+    setIsDev(host === "localhost" || host === "127.0.0.1");
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -98,11 +104,6 @@ function LoginForm() {
       setDevRole(null);
     }
   }
-
-  const isDev =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1");
 
   return (
     <Card>

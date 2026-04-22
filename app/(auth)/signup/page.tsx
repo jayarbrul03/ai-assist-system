@@ -38,6 +38,8 @@ export default function SignupPage() {
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
+
+    console.log(data, error);
     if (error) {
       setError(error.message);
       setLoading(false);
