@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { defaultSchemeRoleForNewUser } from "@/lib/auth/onboarding-role";
 
 /**
  * Zero-friction onboarding: if the user has no scheme, create a default one
  * and send them straight to the dashboard. They fill in details later from
- * Settings. No wizard, no form, no friction.
+ * Settings. Role comes from signup metadata (see /start → /signup?role=...).
  */
 export default async function OnboardingPage() {
   const supabase = await createClient();
@@ -20,8 +21,6 @@ export default async function OnboardingPage() {
     .limit(1)
     .maybeSingle();
 
-  console.log("existing", existing);
-
   if (!existing?.scheme_id) {
     const fullName =
       (user.user_metadata?.full_name as string | undefined) ??
@@ -32,16 +31,24 @@ export default async function OnboardingPage() {
       year: "numeric",
     });
 
+    const membershipRole = defaultSchemeRoleForNewUser(user.user_metadata);
+
     const service = createServiceClient();
+    const insertPayload: {
+      name: string;
+      jurisdiction: string;
+      governing_act: string;
+      onboarded_by: string;
+    } = {
+      name: `${fullName}'s scheme — ${shortDate}`,
+      jurisdiction: "QLD",
+      governing_act: "BCCM 1997",
+      onboarded_by: user.id,
+    };
+
     const { data: scheme } = await service
       .from("schemes")
-      .insert({
-        name: `${fullName}'s scheme — ${shortDate}`,
-        jurisdiction: "QLD",
-        governing_act: "BCCM 1997",
-        onboarded_by: user.id,
-        created_by: user.id,
-      })
+      .insert(insertPayload)
       .select("id")
       .single();
 
@@ -49,7 +56,7 @@ export default async function OnboardingPage() {
       await service.from("scheme_memberships").insert({
         user_id: user.id,
         scheme_id: scheme.id,
-        role: "owner",
+        role: membershipRole,
         verified: true,
       });
     }

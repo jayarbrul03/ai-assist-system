@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -14,15 +15,76 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import {
+  isOnboardingRole,
+  ONBOARDING_ROLE_LABELS,
+  USER_METADATA_KEY,
+  type OnboardingRole,
+} from "@/lib/auth/onboarding-role";
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get("role");
+  const resolvedRole: OnboardingRole | null = isOnboardingRole(roleParam)
+    ? roleParam
+    : null;
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+
+  if (roleParam !== null && !resolvedRole) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Invalid role</CardTitle>
+          <CardDescription>Choose how you will use Parity to continue.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild className="w-full">
+            <Link href="/start">Choose your role</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!resolvedRole) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Choose your role first</CardTitle>
+          <CardDescription>
+            We need to know whether you are a resident, manager, or on the
+            committee so we can set up the right experience.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild className="w-full">
+            <Link href="/start">How will you use Parity?</Link>
+          </Button>
+          <p className="mt-4 text-center text-sm text-neutral-600">
+            Already have an account?{" "}
+            <Link href="/login" className="text-teal-700 font-medium hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,12 +96,14 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: {
+          full_name: fullName,
+          [USER_METADATA_KEY]: resolvedRole,
+        },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
 
-    console.log(data, error);
     if (error) {
       setError(error.message);
       setLoading(false);
@@ -57,7 +121,12 @@ export default function SignupPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create your account</CardTitle>
+        <div className="flex flex-wrap items-center gap-2">
+          <CardTitle>Create your account</CardTitle>
+          <Badge variant="secondary" className="text-xs font-normal">
+            {ONBOARDING_ROLE_LABELS[resolvedRole]}
+          </Badge>
+        </div>
         <CardDescription>
           Free while in beta. Your data stays in Australia.
         </CardDescription>
@@ -115,7 +184,15 @@ export default function SignupPage() {
             {loading ? "Creating…" : "Create account"}
           </Button>
         </form>
-        <p className="mt-6 text-center text-sm text-neutral-600">
+        <p className="mt-4 text-center text-sm text-neutral-600">
+          <Link
+            href="/start"
+            className="text-teal-700 font-medium hover:underline"
+          >
+            Change role
+          </Link>
+        </p>
+        <p className="mt-2 text-center text-sm text-neutral-600">
           Already have an account?{" "}
           <Link href="/login" className="text-teal-700 font-medium hover:underline">
             Sign in

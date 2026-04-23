@@ -2,7 +2,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { config as appConfig } from "@/lib/config";
 
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/privacy", "/terms", "/about"];
+const PUBLIC_PATHS = [
+  "/",
+  "/start",
+  "/login",
+  "/signup",
+  "/privacy",
+  "/terms",
+  "/about",
+];
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -57,7 +65,7 @@ export async function middleware(request: NextRequest) {
 
   if (
     user &&
-    (pathname === "/login" || pathname === "/signup")
+    (pathname === "/login" || pathname === "/signup" || pathname === "/start")
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";

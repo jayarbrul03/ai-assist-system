@@ -193,7 +193,7 @@ function LoginForm() {
 
         <p className="mt-6 text-center text-sm text-neutral-600">
           New here?{" "}
-          <Link href="/signup" className="text-teal-700 font-medium hover:underline">
+          <Link href="/start" className="text-teal-700 font-medium hover:underline">
             Create an account
           </Link>
         </p>

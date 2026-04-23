@@ -18,7 +18,7 @@ export default function Landing() {
             <Link href="/login">Log in</Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/signup">Get started</Link>
+            <Link href="/start">Get started</Link>
           </Button>
         </div>
       </nav>
@@ -43,7 +43,7 @@ export default function Landing() {
 
         <div className="mt-10 flex flex-col sm:flex-row gap-3">
           <Button asChild size="lg">
-            <Link href="/signup">Start free — no scheme details needed</Link>
+            <Link href="/start">Start free — no scheme details needed</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link href="/about">See how it works</Link>

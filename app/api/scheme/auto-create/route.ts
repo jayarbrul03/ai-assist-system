@@ -2,12 +2,12 @@
  * Auto-create a default scheme + membership for the signed-in user when
  * they land on the dashboard without one. Zero clicks.
  *
- * Scheme gets a friendly auto-name; user fills in CMS/CTS/address later
- * from Settings. Keeps first-run UX to: signup → straight into the app.
+ * Role follows `onboarding_role` in user metadata (set at signup); else owner.
  */
 
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { defaultSchemeRoleForNewUser } from "@/lib/auth/onboarding-role";
 
 export const runtime = "nodejs";
 
@@ -38,6 +38,8 @@ export async function POST() {
     year: "numeric",
   });
 
+  const membershipRole = defaultSchemeRoleForNewUser(user.user_metadata);
+
   const service = createServiceClient();
   const { data: scheme, error: schemeErr } = await service
     .from("schemes")
@@ -46,7 +48,6 @@ export async function POST() {
       jurisdiction: "QLD",
       governing_act: "BCCM 1997",
       onboarded_by: user.id,
-      created_by: user.id,
     })
     .select("*")
     .single();
@@ -61,7 +62,7 @@ export async function POST() {
   await service.from("scheme_memberships").insert({
     user_id: user.id,
     scheme_id: scheme.id,
-    role: "owner",
+    role: membershipRole,
     verified: true,
   });
 
