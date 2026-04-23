@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("user:", user);
   if (!user) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
 
   const body = (await req.json()) as {
@@ -45,8 +44,6 @@ export async function POST(req: NextRequest) {
     tone?: "positive" | "info" | "meeting" | "reminder" | "urgent";
     pinned?: boolean;
   };
-
-  console.log("body:", body);
 
   if (!body?.schemeId || !body?.title || !body?.body) {
     return NextResponse.json(
@@ -63,8 +60,6 @@ export async function POST(req: NextRequest) {
     .eq("scheme_id", body.schemeId)
     .maybeSingle();
 
-  console.log("membership:", membership);
-
   const role = (membership as { role?: string } | null)?.role;
   if (!role || !["committee_chair", "committee_member", "manager"].includes(role)) {
     return NextResponse.json(
@@ -73,8 +68,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  console.log("role:", role);
-  
+ 
   const { data, error } = await supabase
     .from("scheme_announcements")
     .insert({
@@ -88,9 +82,6 @@ export async function POST(req: NextRequest) {
     })
     .select("*")
     .single();
-
-    console.log("data:", data);
-    console.log("error:", error);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
