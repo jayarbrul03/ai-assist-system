@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +46,6 @@ function SignupForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
 
   if (roleParam !== null && !resolvedRole) {
     return (
@@ -92,7 +92,6 @@ function SignupForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setInfo(null);
     const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -117,29 +116,27 @@ function SignupForm() {
       router.push("/onboarding");
       router.refresh();
     } else {
-      setInfo("Check your email for a confirmation link.");
+      toast.success("Confirm your email", {
+        description: `We sent a link to ${email.trim()}. Open it to verify your account, then sign in to continue.`,
+        duration: 14_000,
+      });
       setLoading(false);
     }
   }
 
   async function onGoogle() {
-    console.log("resolvedRole:", resolvedRole);
     if (!resolvedRole) return;
     setLoading(true);
     setError(null);
-    setInfo(null);
     const supabase = createClient();
     const redirectTo = buildAuthCallbackUrl(window.location.origin, {
       redirect: "/onboarding",
       onboardingRole: resolvedRole,
     });
-    console.log("redirectTo:", redirectTo);
     const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo },
     });
-    console.log("data:", data);
-    console.log("oauthError:", oauthError);
 
     if (oauthError) {
       setError(oauthError.message);
@@ -208,11 +205,6 @@ function SignupForm() {
           {error ? (
             <p className="text-sm text-red-600" role="alert">
               {error}
-            </p>
-          ) : null}
-          {info ? (
-            <p className="text-sm text-teal-700" role="status">
-              {info}
             </p>
           ) : null}
           <Button type="submit" className="w-full" disabled={loading}>

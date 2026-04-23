@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Instrument_Serif } from "next/font/google";
 import { PostHogProvider } from "@/components/shared/posthog-provider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -29,7 +30,18 @@ export default function RootLayout({
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} ${instrumentSerif.variable} min-h-full flex flex-col font-sans antialiased`}
       >
-        <PostHogProvider>{children}</PostHogProvider>
+        <PostHogProvider>
+          {children}
+          <Toaster
+            position="top-center"
+            richColors
+            closeButton
+            duration={12_000}
+            toastOptions={{
+              className: "font-sans",
+            }}
+          />
+        </PostHogProvider>
       </body>
     </html>
   );
