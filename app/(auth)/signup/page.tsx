@@ -21,6 +21,8 @@ import {
   USER_METADATA_KEY,
   type OnboardingRole,
 } from "@/lib/auth/onboarding-role";
+import { buildAuthCallbackUrl } from "@/lib/auth/oauth";
+import { GoogleOAuthButton } from "@/components/auth/google-oauth-button";
 
 export default function SignupPage() {
   return (
@@ -100,7 +102,9 @@ function SignupForm() {
           full_name: fullName,
           [USER_METADATA_KEY]: resolvedRole,
         },
-        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        emailRedirectTo: buildAuthCallbackUrl(window.location.origin, {
+          redirect: "/onboarding",
+        }),
       },
     });
 
@@ -114,6 +118,37 @@ function SignupForm() {
       router.refresh();
     } else {
       setInfo("Check your email for a confirmation link.");
+      setLoading(false);
+    }
+  }
+
+  async function onGoogle() {
+    console.log("resolvedRole:", resolvedRole);
+    if (!resolvedRole) return;
+    setLoading(true);
+    setError(null);
+    setInfo(null);
+    const supabase = createClient();
+    const redirectTo = buildAuthCallbackUrl(window.location.origin, {
+      redirect: "/onboarding",
+      onboardingRole: resolvedRole,
+    });
+    console.log("redirectTo:", redirectTo);
+    const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+    console.log("data:", data);
+    console.log("oauthError:", oauthError);
+
+    if (oauthError) {
+      setError(oauthError.message);
+      setLoading(false);
+      return;
+    }
+    if (data?.url) {
+      window.location.assign(data.url);
+    } else {
       setLoading(false);
     }
   }
@@ -184,6 +219,20 @@ function SignupForm() {
             {loading ? "Creating…" : "Create account"}
           </Button>
         </form>
+
+        <div className="my-4 flex items-center gap-3 text-xs text-neutral-500">
+          <div className="h-px flex-1 bg-neutral-200" />
+          <span>or</span>
+          <div className="h-px flex-1 bg-neutral-200" />
+        </div>
+
+        <GoogleOAuthButton
+          onClick={onGoogle}
+          disabled={loading}
+          loading={loading}
+          aria-label="Sign up with Google"
+        />
+
         <p className="mt-4 text-center text-sm text-neutral-600">
           <Link
             href="/start"

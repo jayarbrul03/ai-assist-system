@@ -15,6 +15,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { GoogleOAuthButton } from "@/components/auth/google-oauth-button";
+import { buildAuthCallbackUrl } from "@/lib/auth/oauth";
 
 export default function LoginPage() {
   return (
@@ -37,6 +39,7 @@ function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const redirect = params.get("redirect") || "/dashboard";
+  const urlError = params.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -66,13 +69,25 @@ function LoginForm() {
 
   async function onGoogle() {
     setLoading(true);
+    setError(null);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?redirect=${encodeURIComponent(redirect)}`,
-      },
+    const redirectTo = buildAuthCallbackUrl(window.location.origin, {
+      redirect,
     });
+    const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+    if (oauthError) {
+      setError(oauthError.message);
+      setLoading(false);
+      return;
+    }
+    if (data?.url) {
+      window.location.assign(data.url);
+    } else {
+      setLoading(false);
+    }
   }
 
   async function devEnter(role: DevRole) {
@@ -140,6 +155,12 @@ function LoginForm() {
           </div>
         ) : null}
 
+        {urlError ? (
+          <p className="mb-4 text-sm text-red-600" role="alert">
+            {decodeURIComponent(urlError.replace(/\+/g, " "))}
+          </p>
+        ) : null}
+
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
@@ -181,15 +202,12 @@ function LoginForm() {
           <div className="h-px flex-1 bg-neutral-200" />
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
+        <GoogleOAuthButton
           onClick={onGoogle}
           disabled={loading}
-        >
-          Continue with Google
-        </Button>
+          loading={loading}
+          aria-label="Sign in with Google"
+        />
 
         <p className="mt-6 text-center text-sm text-neutral-600">
           New here?{" "}
