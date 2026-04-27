@@ -195,7 +195,7 @@ export function ChatView({
         <header className="px-6 py-4 border-b border-neutral-200 bg-white">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-serif-brand text-xl font-semibold">Rulebook AI</h1>
+              <h1 className="font-serif-brand text-xl font-semibold">The Brain</h1>
               <p className="text-xs text-neutral-500">{schemeName}</p>
             </div>
           </div>

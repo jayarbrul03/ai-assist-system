@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/card";
 import { formatDateTime, daysUntil } from "@/lib/utils";
 import { stageLabel } from "@/lib/comms";
+import { isLeadershipRole } from "@/lib/roles";
+import { LeadershipStatusActions } from "@/components/communications/leadership-status-actions";
 
 export default async function CommsDetail({
   params,
@@ -36,6 +38,8 @@ export default async function CommsDetail({
 
   const c = comm as {
     id: string;
+    from_user: string;
+    thread_id: string | null;
     subject: string | null;
     body: string | null;
     stage: string;
@@ -53,19 +57,58 @@ export default async function CommsDetail({
   const d = daysUntil(c.response_deadline);
   const overdue = d !== null && d < 0;
 
+  const isLeadership = isLeadershipRole(ctx.membership?.role);
+  const isSender = c.from_user === ctx.user.id;
+  const inbound =
+    c.to_party === "committee" || c.to_party === "manager";
+
   return (
     <PageShell>
       <PageHeader
         title={c.subject || "(no subject)"}
-        description={`${stageLabel(c.stage)} · ${c.to_party ?? "—"}`}
+        description={`${stageLabel(c.stage)} · To ${c.to_party ?? "—"}`}
         action={
-          <Button asChild variant="outline">
-            <Link href="/communications">Back</Link>
-          </Button>
+          <div className="flex gap-2">
+            {isSender ? (
+              <Button asChild variant="default">
+                <Link href={`/communications/new?after=${c.id}`}>
+                  Follow-up in thread
+                </Link>
+              </Button>
+            ) : null}
+            <Button asChild variant="outline">
+              <Link href="/communications">Back</Link>
+            </Button>
+          </div>
         }
       />
 
       <div className="grid gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">What &ldquo;Served&rdquo; means</CardTitle>
+            <CardDescription>
+              <strong>Served</strong> in Parity means the message is stored as issued in the app,
+              with a served time and (when shown) a response window. It is not the same as automatic
+              email to the recipient unless you add that feature.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        {isLeadership && inbound ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Committee / manager</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LeadershipStatusActions
+                communicationId={c.id}
+                currentStatus={c.status}
+              />
+            </CardContent>
+          </Card>
+        ) : null}
+
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Status</CardTitle>

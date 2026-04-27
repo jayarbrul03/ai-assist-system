@@ -9,6 +9,7 @@ export type AuditAction =
   | "evidence_shared"
   | "comms_drafted"
   | "comms_served"
+  | "comms_leadership_status"
   | "comms_stage_skipped"
   | "records_drafted"
   | "records_submitted"
@@ -18,6 +19,9 @@ export type AuditAction =
   | "issue_updated"
   | "export_generated"
   | "chat_message"
+  | "inbox_ai_batch"
+  | "inbox_draft_reply"
+  | "inbox_labels_updated"
   | "rls_denial";
 
 export async function audit(entry: {

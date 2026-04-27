@@ -150,6 +150,7 @@ export interface Communication {
   responded_at: ISODate | null;
   created_at: ISODate;
   updated_at: ISODate;
+  inbox_labels?: string[];
 }
 
 export interface RecordsRequest {

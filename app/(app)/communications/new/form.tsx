@@ -30,10 +30,14 @@ export function NewCommsForm({
   schemeId,
   schemeName,
   evidence,
+  threadRootId = null,
+  priorStageSummary = null,
 }: {
   schemeId: string;
   schemeName: string;
   evidence: EvidenceLink[];
+  threadRootId?: string | null;
+  priorStageSummary?: string | null;
 }) {
   const router = useRouter();
   const [stage, setStage] = useState<StageValue>("stage_1_fyi");
@@ -83,6 +87,7 @@ export function NewCommsForm({
             .filter(Boolean),
           relatedEvidenceIds: Array.from(selected),
           stageSkipJustification: isSkipping ? skipReason : undefined,
+          priorStageSummary: priorStageSummary ?? undefined,
         }),
       });
       if (!res.ok) {
@@ -125,6 +130,7 @@ export function NewCommsForm({
       .from("communications")
       .insert({
         scheme_id: schemeId,
+        thread_id: threadRootId,
         from_user: user.id,
         to_party: toParty,
         to_party_email: toEmail || null,
@@ -138,6 +144,9 @@ export function NewCommsForm({
       })
       .select("id")
       .single();
+
+    console.log("data", data);
+    console.log("insErr", insErr);
 
     if (insErr) {
       setError(insErr.message);
@@ -328,6 +337,12 @@ export function NewCommsForm({
         </CardContent>
       </Card>
 
+      {threadRootId ? (
+        <p className="text-xs text-neutral-500">
+          Thread: this message is linked to an existing matter (same thread in your list).
+        </p>
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Draft</CardTitle>
@@ -405,6 +420,14 @@ export function NewCommsForm({
               </Button>
             )}
           </div>
+          {savedId ? (
+            <p className="text-xs text-neutral-600 border-t border-neutral-100 pt-3 mt-3">
+              <strong>Served</strong> records this letter in Parity with a served time and response
+              window (where applicable). It does <strong>not</strong> email the recipient
+              automatically—copy the text to your email or channel, or add email delivery in a later
+              release.
+            </p>
+          ) : null}
         </CardContent>
       </Card>
     </div>

@@ -139,6 +139,7 @@ create table communications (
   acknowledged_at timestamptz,
   response_deadline timestamptz,
   responded_at timestamptz,
+  inbox_labels text[] not null default '{}',
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -361,7 +362,7 @@ create policy comms_select on communications for select
   using (
     from_user = auth.uid()
     or (
-      to_party = 'committee'
+      to_party in ('committee', 'manager')
       and scheme_id in (
         select scheme_id from scheme_memberships
         where user_id = auth.uid()

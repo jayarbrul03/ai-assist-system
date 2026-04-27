@@ -116,7 +116,24 @@ export default async function DashboardPage() {
 
       <DisclaimerStrip className="mb-6" compact />
 
-      {/* HERO — Ask the Rulebook AI */}
+      {isLeadership ? (
+        <Card className="mb-6 border-teal-200 bg-white">
+          <CardContent className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Inbox (committee &amp; manager)</CardTitle>
+              <CardDescription>
+                Inbound letters to the committee or body corporate manager, plus records activity—one
+                queue for busy buildings.
+              </CardDescription>
+            </div>
+            <Button asChild>
+              <Link href="/inbox">Open inbox</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* HERO — The Brain (by-law Q&A) */}
       <Card className="mb-8 border-teal-200 bg-gradient-to-br from-teal-50/70 via-white to-white">
         <CardHeader>
           <div className="flex items-start gap-3">
@@ -168,10 +185,13 @@ export default async function DashboardPage() {
                 />
               ))
             )}
-            <div className="pt-2 flex items-center gap-2">
+            <div className="pt-2 flex flex-wrap items-center gap-2">
               <Button asChild variant="ghost" size="sm">
                 <Link href="/announcements">View all</Link>
               </Button>
+              {/* <Button asChild variant="ghost" size="sm">
+                <Link href="/feed">Merged feed</Link>
+              </Button> */}
               {isLeadership ? (
                 <Button asChild variant="outline" size="sm">
                   <Link href="/announcements">

@@ -28,6 +28,8 @@ export default async function CommsListPage() {
     .eq("scheme_id", ctx.scheme.id)
     .order("created_at", { ascending: false });
 
+  console.log("schemeId", ctx.scheme.id);
+
   const list = (comms ?? []) as Array<{
     id: string;
     thread_id: string | null;

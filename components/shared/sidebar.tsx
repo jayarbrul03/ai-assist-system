@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  Rss,
   MessageSquareText,
+  Sparkles,
   FolderLock,
   Clock,
   Send,
@@ -16,12 +18,15 @@ import {
   Megaphone,
   Gavel,
   LifeBuoy,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const items = [
+const baseItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/chat", label: "Rulebook AI", icon: MessageSquareText },
+  // { href: "/feed", label: "Feed", icon: Rss },
+  { href: "/chat", label: "The Brain", icon: MessageSquareText },
+  // { href: "/ai", label: "Parity AI", icon: Sparkles },
   { href: "/announcements", label: "Announcements", icon: Megaphone },
   { href: "/communications", label: "Communications", icon: Send },
   { href: "/records", label: "Records", icon: FileText },
@@ -35,8 +40,18 @@ const items = [
   { href: "/support", label: "Support", icon: LifeBuoy },
 ];
 
-export function Sidebar() {
+const inboxItem = { href: "/inbox", label: "Inbox", icon: Inbox };
+
+export function Sidebar({ showInbox = false }: { showInbox?: boolean }) {
   const pathname = usePathname();
+  const items = showInbox
+    ? [
+        baseItems[0],
+        inboxItem,
+        ...baseItems.slice(1),
+      ]
+    : [...baseItems];
+
   return (
     <aside className="w-60 shrink-0 border-r border-neutral-200 bg-white flex flex-col">
       <div className="px-6 py-5 border-b border-neutral-200">

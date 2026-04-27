@@ -1,7 +1,12 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { config } from "@/lib/config";
 
-type RateLimitKind = "chat_message" | "evidence_analyse" | "draft_generation";
+type RateLimitKind =
+  | "chat_message"
+  | "evidence_analyse"
+  | "draft_generation"
+  | "inbox_ai_batch"
+  | "inbox_draft_reply";
 
 const KIND_MAP: Record<RateLimitKind, { action: string; limit: number }> = {
   chat_message: {
@@ -15,6 +20,14 @@ const KIND_MAP: Record<RateLimitKind, { action: string; limit: number }> = {
   draft_generation: {
     action: "comms_drafted",
     limit: config.limits.draftGenerationsPerDay,
+  },
+  inbox_ai_batch: {
+    action: "inbox_ai_batch",
+    limit: config.limits.inboxAiBatchesPerDay,
+  },
+  inbox_draft_reply: {
+    action: "inbox_draft_reply",
+    limit: config.limits.inboxDraftRepliesPerDay,
   },
 };
 

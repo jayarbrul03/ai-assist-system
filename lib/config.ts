@@ -61,6 +61,8 @@ export const config = {
     chatMessagesPerDay: 20,
     evidenceAnalysesPerDay: 10,
     draftGenerationsPerDay: 5,
+    inboxAiBatchesPerDay: 25,
+    inboxDraftRepliesPerDay: 20,
   },
   rag: {
     similarityThreshold: 0.7,
