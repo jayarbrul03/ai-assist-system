@@ -1,6 +1,5 @@
 import type { SchemeRole } from "@/lib/supabase/types";
 
-/** Values we store in auth user metadata and use for first scheme_memberships.role */
 export const ONBOARDING_ROLES = [
   "owner",
   "tenant",
@@ -23,7 +22,6 @@ export function isOnboardingRole(s: string | null | undefined): s is OnboardingR
   return s !== null && s !== undefined && (ONBOARDING_ROLES as readonly string[]).includes(s);
 }
 
-/** Map chosen onboarding path to a valid scheme_role. */
 export function toSchemeRole(choice: OnboardingRole): SchemeRole {
   return choice;
 }

@@ -26,6 +26,8 @@ import {
   Users,
 } from "lucide-react";
 import { QuickAsk } from "./quick-ask";
+import { RoleDashboardHero } from "@/components/dashboard/role-dashboard-hero";
+import { getRoleSegment } from "@/lib/roles";
 
 export default async function DashboardPage() {
   const ctx = await getActiveScheme();
@@ -39,6 +41,7 @@ export default async function DashboardPage() {
     role === "committee_chair" ||
     role === "committee_member" ||
     role === "manager";
+  const roleSegment = getRoleSegment(role);
 
   const [
     { count: evidenceCount },
@@ -108,30 +111,21 @@ export default async function DashboardPage() {
           Good to see you{firstName ? `, ${capitalize(firstName)}` : ""}.
         </h1>
         <p className="text-neutral-600 mt-2 text-base">
-          {isLeadership
-            ? "Parity helps you communicate with fairness, recognise good conduct, and keep a clean record when disputes arise."
-            : "Parity helps you understand your by-laws, communicate calmly with your committee, and hold a record only if you ever need it."}
+          {roleSegment === "resident"
+            ? "Start below with your path — or scroll for announcements and the full toolset."
+            : roleSegment === "manager"
+              ? "Review scheme-wide activity, clear the inbox, and keep record where it matters."
+              : "Lead communication, transparency, and a clean record of decisions and notices."}
         </p>
       </header>
 
       <DisclaimerStrip className="mb-6" compact />
 
-      {isLeadership ? (
-        <Card className="mb-6 border-teal-200 bg-white">
-          <CardContent className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <CardTitle className="text-base">Inbox (committee &amp; manager)</CardTitle>
-              <CardDescription>
-                Inbound letters to the committee or body corporate manager, plus records activity—one
-                queue for busy buildings.
-              </CardDescription>
-            </div>
-            <Button asChild>
-              <Link href="/inbox">Open inbox</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      ) : null}
+      <RoleDashboardHero
+        segment={roleSegment}
+        schemeName={ctx.scheme.name}
+        firstName={firstName ? capitalize(firstName.trim().split(/\s+/)[0] || firstName) : "there"}
+      />
 
       {/* HERO — The Brain (by-law Q&A) */}
       <Card className="mb-8 border-teal-200 bg-gradient-to-br from-teal-50/70 via-white to-white">

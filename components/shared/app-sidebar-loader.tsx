@@ -1,5 +1,10 @@
 import { getActiveScheme } from "@/lib/scheme";
-import { isLeadershipRole } from "@/lib/roles";
+import {
+  isLeadershipRole,
+  isResidentRole,
+  isManagerRole,
+  isCommitteeRole,
+} from "@/lib/roles";
 import { Sidebar } from "./sidebar";
 
 /**
@@ -8,7 +13,12 @@ import { Sidebar } from "./sidebar";
 export async function AppSidebarLoader() {
   const ctx = await getActiveScheme();
   const role = ctx?.membership?.role;
-  const showInbox = isLeadershipRole(role);
-
-  return <Sidebar showInbox={showInbox} />;
+  return (
+    <Sidebar
+      showInbox={isLeadershipRole(role)}
+      showMyCase={isResidentRole(role)}
+      showManagerHub={isManagerRole(role)}
+      showCommitteeHub={isCommitteeRole(role)}
+    />
+  );
 }
