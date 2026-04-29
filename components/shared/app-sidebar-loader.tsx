@@ -13,12 +13,14 @@ import { Sidebar } from "./sidebar";
 export async function AppSidebarLoader() {
   const ctx = await getActiveScheme();
   const role = ctx?.membership?.role;
+  const resident = isResidentRole(role);
   return (
     <Sidebar
       showInbox={isLeadershipRole(role)}
-      showMyCase={isResidentRole(role)}
+      showMyCase={resident}
       showManagerHub={isManagerRole(role)}
       showCommitteeHub={isCommitteeRole(role)}
+      simplifiedResident={resident}
     />
   );
 }
